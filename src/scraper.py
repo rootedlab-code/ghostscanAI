@@ -64,7 +64,7 @@ class SecureScraper:
                 # We rotate UA for DDGS specifically
                 headers = {"User-Agent": self._get_random_user_agent()}
                 
-                with DDGS(headers=headers, proxy=self.proxies['https'], timeout=45) as ddgs:
+                with DDGS(proxy=self.proxies['https'], timeout=45) as ddgs:
                     results = ddgs.images(
                         keywords=query,
                         region="wt-wt",
