@@ -2,7 +2,9 @@ import os
 import shutil
 import logging
 from typing import List
-from fastapi import FastAPI, UploadFile, File, BackgroundTasks, HTTPException
+from fastapi import FastAPI, UploadFile, File, BackgroundTasks, HTTPException, WebSocket, WebSocketDisconnect
+import asyncio
+import queue
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -12,6 +14,73 @@ from .utils import setup_logger, ensure_directories
 
 # Setup Logger
 logger = setup_logger("API")
+
+# WebSocket Log Manager
+class LogManager:
+    def __init__(self):
+        self.active_connections: List[WebSocket] = []
+        self.log_queue = queue.SimpleQueue()
+        self.is_running = False
+
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
+
+    def disconnect(self, websocket: WebSocket):
+        self.active_connections.remove(websocket)
+
+    def push_log(self, message: str):
+        self.log_queue.put(message)
+
+    async def start_broadcaster(self):
+        """Background task to consume queue and broadcast."""
+        self.is_running = True
+        logger.info("Log broadcaster started.")
+        while self.is_running:
+            try:
+                # Non-blocking check or awaitable in a loop
+                # Since queue.get() is blocking, we wrap it or use short polling
+                # Better: use asyncio.sleep in loop to allow context switches if empty
+                while not self.log_queue.empty():
+                    msg = self.log_queue.get()
+                    await self.broadcast(msg)
+                
+                await asyncio.sleep(0.1)
+            except Exception as e:
+                print(f"Broadcaster error: {e}")
+                await asyncio.sleep(1)
+
+    async def broadcast(self, message: str):
+        if not self.active_connections:
+            return
+        
+        # Snapshot copy to avoid modification during iteration
+        for connection in list(self.active_connections):
+            try:
+                await connection.send_text(message)
+            except:
+                # If send fails, we assume valid disconnect handled elsewhere or next cycle
+                pass
+
+log_manager = LogManager()
+
+# Custom Handler to stream logs
+class BroadcastLogHandler(logging.Handler):
+    def emit(self, record):
+        try:
+            msg = self.format(record)
+            log_manager.push_log(msg)
+        except Exception:
+            self.handleError(record)
+
+# Attach broadcast handler to root logger so we capture EVERYTHING (Scraper, Main, API)
+root_logger = logging.getLogger()
+broadcast_handler = BroadcastLogHandler()
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+broadcast_handler.setFormatter(formatter)
+root_logger.addHandler(broadcast_handler)
+
+# On Startup
 
 # Paths
 DATA_DIR = "/app/data"
@@ -28,6 +97,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.on_event("startup")
+async def startup_event():
+    asyncio.create_task(log_manager.start_broadcaster())
 
 # Ensure dirs exist on startup
 ensure_directories([INPUT_DIR, MATCH_DIR])
@@ -93,6 +166,16 @@ async def get_results(filename: str):
         return {"results": data}
     except Exception as e:
         return {"error": str(e), "results": []}
+
+@app.websocket("/ws/logs")
+async def websocket_endpoint(websocket: WebSocket):
+    await log_manager.connect(websocket)
+    try:
+        while True:
+            # Just keep connection open, maybe receive ping
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        log_manager.disconnect(websocket)
 
 # Serve Static Files (Frontend)
 # We assume 'src/static' maps to '/static' inside container or similar, 

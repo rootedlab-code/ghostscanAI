@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OSINT Face Scanner | Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
     <div class="app-container">
         <!-- Sidebar -->
@@ -16,7 +20,7 @@
                 <i class="fa-solid fa-eye fa-spin-pulse"></i>
                 <span>GHOST<span class="highlight">SCAN</span></span>
             </div>
-            
+
             <nav class="nav-menu">
                 <a href="#" class="nav-item active" onclick="showSection('dashboard')">
                     <i class="fa-solid fa-chart-line"></i> Dashboard
@@ -46,7 +50,7 @@
 
         <!-- Main Content -->
         <main class="main-content">
-            
+
             <!-- Dashboard Section -->
             <section id="dashboard" class="content-section active">
                 <header class="section-header">
@@ -100,6 +104,23 @@
                 </div>
             </section>
 
+            <!-- Logs Section -->
+            <section id="logs" class="content-section">
+                <header class="section-header">
+                    <h1>System Logs</h1>
+                    <div class="actions">
+                        <button class="btn-primary" onclick="clearLogs()">
+                            <i class="fa-solid fa-trash"></i> Clear
+                        </button>
+                    </div>
+                </header>
+                <div class="terminal-container">
+                    <div id="log-terminal" class="terminal-output">
+                        <div class="log-entry system">Connecting to log stream...</div>
+                    </div>
+                </div>
+            </section>
+
         </main>
     </div>
 
@@ -119,4 +140,5 @@
 
     <script src="app.js"></script>
 </body>
+
 </html>

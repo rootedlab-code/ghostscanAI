@@ -3,6 +3,7 @@ const API_URL = "/api";
 document.addEventListener('DOMContentLoaded', () => {
     loadTargets();
     updateStats();
+    connectWebSocket();
 
     // Setup Drag & Drop
     const dropZone = document.getElementById('drop-zone');
@@ -145,4 +146,59 @@ function addActivity(msg) {
 function updateStats() {
     // Placeholder - in real app fetch from stats endpoint
     // For now we rely on loadTargets for target count
+}
+
+// WebSocket Logs
+let ws;
+function connectWebSocket() {
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${protocol}//${window.location.host}/ws/logs`;
+
+    ws = new WebSocket(wsUrl);
+
+    ws.onopen = () => {
+        addLogEntry("System", "Connected to live log stream.", "system");
+        document.querySelector('.status-item .value.online').classList.add('pulse');
+    };
+
+    ws.onmessage = (event) => {
+        const msg = event.data;
+        let type = 'info';
+        if (msg.includes('ERROR') || msg.includes('CRITICAL')) type = 'error';
+        else if (msg.includes('WARNING')) type = 'warning';
+        else if (msg.includes('DEBUG')) type = 'debug';
+
+        addLogEntry("Log", msg, type);
+    };
+
+    ws.onclose = () => {
+        addLogEntry("System", "Connection lost. Reconnecting in 3s...", "error");
+        document.querySelector('.status-item .value.online').classList.remove('pulse');
+        setTimeout(connectWebSocket, 3000);
+    };
+
+    ws.onerror = (err) => {
+        console.error("WS Error", err);
+        ws.close();
+    };
+}
+
+function addLogEntry(source, message, type) {
+    const terminal = document.getElementById('log-terminal');
+    if (!terminal) return;
+
+    const entry = document.createElement('div');
+    entry.className = `log-entry ${type}`;
+    if (!message.match(/^\d{4}-\d{2}-\d{2}/)) {
+        message = `${new Date().toLocaleTimeString()} - ${message}`;
+    }
+    entry.innerText = message;
+
+    terminal.appendChild(entry);
+    terminal.scrollTop = terminal.scrollHeight;
+}
+
+function clearLogs() {
+    const terminal = document.getElementById('log-terminal');
+    if (terminal) terminal.innerHTML = '<div class="log-entry system">Logs cleared.</div>';
 }
