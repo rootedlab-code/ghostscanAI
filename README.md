@@ -2,7 +2,7 @@
 
 **GhostScan** is an advanced, AI-powered OSINT (Open Source Intelligence) tool designed for facial recognition and deep web scanning. 
 
-![GhostScan Dashboard](https://via.placeholder.com/800x400?text=GhostScan+Interface)
+![GhostScan Dashboard](docs/images/ghostscan_cover.png)
 
 ## 🚀 Features
 
