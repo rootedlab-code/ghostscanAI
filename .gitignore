@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# Docker
+.docker/
+
+# Environment Variables
+.env
+
+# VS Code
+.vscode/
+
+# OSINT Scanner Data
+data/downloads/
+data/matches/
+# Do not exclude inputs so users can see example structure, but maybe exclude content
+# data/inputs/*
+# !data/inputs/.gitkeep
+
+# Logs
+*.log

@@ -1,0 +1,11 @@
+deepface
+retina-face
+ddgs
+pysocks
+requests
+opencv-python-headless
+tf-keras
+pandas
+fastapi
+uvicorn
+python-multipart

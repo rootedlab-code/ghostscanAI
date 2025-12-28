@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSINT Face Scanner | Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-eye fa-spin-pulse"></i>
+                <span>GHOST<span class="highlight">SCAN</span></span>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" onclick="showSection('dashboard')">
+                    <i class="fa-solid fa-chart-line"></i> Dashboard
+                </a>
+                <a href="#" class="nav-item" onclick="showSection('targets')">
+                    <i class="fa-solid fa-users-viewfinder"></i> Targets
+                </a>
+                <a href="#" class="nav-item" onclick="showSection('results')">
+                    <i class="fa-solid fa-folder-open"></i> Results
+                </a>
+                <a href="#" class="nav-item" onclick="showSection('logs')">
+                    <i class="fa-solid fa-terminal"></i> Live Logs
+                </a>
+            </nav>
+
+            <div class="status-panel">
+                <div class="status-item">
+                    <span class="label">System Status</span>
+                    <span class="value online">ONLINE</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">Tor Circuit</span>
+                    <span class="value secure">SECURE</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section active">
+                <header class="section-header">
+                    <h1>Dashboard Overview</h1>
+                    <div class="actions">
+                        <button class="btn-primary" onclick="triggerUploadModal()">
+                            <i class="fa-solid fa-plus"></i> New Target
+                        </button>
+                    </div>
+                </header>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="icon"><i class="fa-solid fa-crosshairs"></i></div>
+                        <div class="info">
+                            <h3>Active Targets</h3>
+                            <p id="stat-targets">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon"><i class="fa-solid fa-images"></i></div>
+                        <div class="info">
+                            <h3>Images Scanned</h3>
+                            <p id="stat-images">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon"><i class="fa-solid fa-check-double"></i></div>
+                        <div class="info">
+                            <h3>Matches Found</h3>
+                            <p id="stat-matches">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recent-activity">
+                    <h2><i class="fa-solid fa-clock-rotate-left"></i> Recent Activity</h2>
+                    <ul id="activity-list">
+                        <li class="empty-state">No recent activity detected.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Targets Section -->
+            <section id="targets" class="content-section">
+                <header class="section-header">
+                    <h1>Target Management</h1>
+                </header>
+                <div id="targets-grid" class="grid-container">
+                    <!-- Targets injected here -->
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Upload Modal -->
+    <div id="upload-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Add New Target</h2>
+            <div class="drop-zone" id="drop-zone">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <p>Drag & Drop image here or click to browse</p>
+                <input type="file" id="file-input" hidden accept="image/*">
+            </div>
+            <button class="btn-primary full-width" onclick="uploadFile()">Upload Target</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

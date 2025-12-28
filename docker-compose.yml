@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  tor-proxy:
+    image: dperson/torproxy
+    container_name: tor-proxy
+    ports:
+      - "9050:9050"
+    restart: always
+
+  face-scanner:
+    build: .
+    container_name: face-scanner
+    depends_on:
+      - tor-proxy
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - TF_FORCE_GPU_ALLOW_GROWTH=true
+      - TOR_PROXY_HOST=tor-proxy
+      - TOR_PROXY_PORT=9050
+    volumes:
+      - ./data:/app/data
+      # Mount src to allow live reloading (optional, or just rebuild)
+      # - ./src:/app/src
+    command: uvicorn src.api:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
