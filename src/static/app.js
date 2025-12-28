@@ -39,6 +39,7 @@ function showSection(sectionId) {
     // Highlight nav item (simple loop matching or specific logic)
     // For now simple reload of data
     if (sectionId === 'targets') loadTargets();
+    if (sectionId === 'results') populateResultsDropdown();
 }
 
 async function loadTargets() {
@@ -89,6 +90,66 @@ async function viewResults(filename) {
         alert(`Found ${data.results.length} matches for ${filename}. Check console for details.`);
     } catch (e) {
         alert("Error loading results");
+    }
+}
+
+async function populateResultsDropdown() {
+    const select = document.getElementById('results-target-select');
+    try {
+        const response = await fetch(`${API_URL}/targets`);
+        const targets = await response.json();
+        select.innerHTML = '<option value="">-- Select Target --</option>';
+        targets.forEach(t => {
+            const opt = document.createElement('option');
+            opt.value = t;
+            opt.textContent = t;
+            select.appendChild(opt);
+        });
+    } catch (e) {
+        console.error("Failed to populate results dropdown", e);
+    }
+}
+
+async function loadResultsForTarget() {
+    const select = document.getElementById('results-target-select');
+    const filename = select.value;
+    const grid = document.getElementById('results-grid');
+
+    if (!filename) {
+        grid.innerHTML = '<div class="empty-state">Select a target to view results.</div>';
+        return;
+    }
+
+    grid.innerHTML = '<div class="empty-state">Loading results...</div>';
+
+    try {
+        const response = await fetch(`${API_URL}/results/${filename}`);
+        const data = await response.json();
+
+        if (!data.results || data.results.length === 0) {
+            grid.innerHTML = '<div class="empty-state">No matches found for this target.</div>';
+            return;
+        }
+
+        grid.innerHTML = '';
+        const targetName = filename.replace(/\.[^/.]+$/, ""); // Remove extension
+        data.results.forEach(match => {
+            const card = document.createElement('div');
+            card.className = 'result-card';
+            const imageUrl = `/matches/${targetName}/${match.image_filename}`;
+            const confidence = match.confidence_distance ? (100 - match.confidence_distance * 100).toFixed(1) : 'N/A';
+            card.innerHTML = `
+                <img src="${imageUrl}" alt="Match" onerror="this.src='https://via.placeholder.com/280x200?text=Image+Not+Found'">
+                <div class="result-info">
+                    <span class="confidence">Match: ${confidence}%</span>
+                    <span class="source">${match.source_url || match.source_page || 'Unknown source'}</span>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    } catch (e) {
+        grid.innerHTML = '<div class="empty-state">Error loading results.</div>';
+        console.error(e);
     }
 }
 

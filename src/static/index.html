@@ -104,6 +104,21 @@
                 </div>
             </section>
 
+            <!-- Results Section -->
+            <section id="results" class="content-section">
+                <header class="section-header">
+                    <h1>Scan Results</h1>
+                    <div class="actions">
+                        <select id="results-target-select" onchange="loadResultsForTarget()">
+                            <option value="">-- Select Target --</option>
+                        </select>
+                    </div>
+                </header>
+                <div id="results-grid" class="grid-container">
+                    <div class="empty-state">Select a target to view results.</div>
+                </div>
+            </section>
+
             <!-- Logs Section -->
             <section id="logs" class="content-section">
                 <header class="section-header">

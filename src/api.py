@@ -184,5 +184,8 @@ STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
 if not os.path.exists(STATIC_DIR):
     os.makedirs(STATIC_DIR)
 
+# Serve match images from data directory
+app.mount("/matches", StaticFiles(directory=MATCH_DIR), name="matches")
+
 app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")
 

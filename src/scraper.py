@@ -66,7 +66,7 @@ class SecureScraper:
                 
                 with DDGS(proxy=self.proxies['https'], timeout=45) as ddgs:
                     results = ddgs.images(
-                        keywords=query,
+                        query,
                         region="wt-wt",
                         safesearch="off",
                         max_results=max_results

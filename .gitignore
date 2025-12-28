@@ -26,22 +26,46 @@ MANIFEST
 venv/
 env/
 ENV/
+.venv/
 
 # Docker
 .docker/
 
-# Environment Variables
+# Environment Variables & Secrets
 .env
+.env.*
+*.env
+.secrets
+secrets/
+*.pem
+*.key
+*.p12
+*.pfx
 
-# VS Code
+# IDE
 .vscode/
+.idea/
+*.swp
+*.swo
+*~
 
-# OSINT Scanner Data
+# OS Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# OSINT Scanner Data (User uploaded targets and results)
 data/downloads/
 data/matches/
-# Do not exclude inputs so users can see example structure, but maybe exclude content
-# data/inputs/*
-# !data/inputs/.gitkeep
+data/inputs/*
+!data/inputs/.gitkeep
 
 # Logs
 *.log
+logs/
+
+# Temporary files
+*.tmp
+*.bak
+*.cache
+
