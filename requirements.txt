@@ -9,3 +9,8 @@ pandas
 fastapi
 uvicorn[standard]
 python-multipart
+sqlalchemy
+ultralytics
+sherlock-project
+openai
+python-dotenv

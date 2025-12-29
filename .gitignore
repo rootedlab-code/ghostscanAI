@@ -57,6 +57,7 @@ desktop.ini
 # OSINT Scanner Data (User uploaded targets and results)
 data/downloads/
 data/matches/
+data/neutron/
 data/inputs/*
 !data/inputs/.gitkeep
 
@@ -69,3 +70,7 @@ logs/
 *.bak
 *.cache
 
+
+# Security Tools
+scripts/encrypt_modules.py
+scripts/decrypt_modules.py

@@ -55,7 +55,7 @@ async function loadTargets() {
             const card = document.createElement('div');
             card.className = 'target-card';
             card.innerHTML = `
-                <img src="placeholder_user.png" onerror="this.src='https://ui-avatars.com/api/?name=${target}&background=0D8ABC&color=fff'" alt="${target}">
+                <img src="https://ui-avatars.com/api/?name=${target}&background=0D8ABC&color=fff" alt="${target}">
                 <div class="target-info">
                     <span class="target-name">${target}</span>
                     <button class="scan-btn" onclick="startScan('${target}')">INITIATE SCAN</button>
@@ -259,7 +259,310 @@ function addLogEntry(source, message, type) {
     terminal.scrollTop = terminal.scrollHeight;
 }
 
+
 function clearLogs() {
     const terminal = document.getElementById('log-terminal');
     if (terminal) terminal.innerHTML = '<div class="log-entry system">Logs cleared.</div>';
 }
+
+
+/* --- PREMIUM MODULES LOGIC --- */
+
+// Security Enforcer
+document.addEventListener('DOMContentLoaded', () => {
+    const torToggle = document.getElementById('neutron-tor-mode');
+    if (torToggle) {
+        torToggle.addEventListener('change', (e) => {
+            if (!e.target.checked) {
+                const proceed = confirm("⚠️ OPSEC WARNING ⚠️\n\nDisabling Ghost Mode will expose your real IP address to target servers.\nAre you sure you want to compromise your anonymity?");
+                if (!proceed) {
+                    e.target.checked = true; // Re-enable if they cancel
+                }
+            }
+        });
+    }
+});
+
+// SAURON
+async function addCamera() {
+    const source = prompt("Enter RTSP URL or Camera ID (0 for webcam):", "0");
+    if (source === null) return;
+
+    try {
+        const res = await fetch(`${API_URL}/modules/sauron/stream/add?source=${encodeURIComponent(source)}`, { method: 'POST' });
+        const data = await res.json();
+        if (res.ok) {
+            alert(`Camera added: ID ${data.id}`);
+            // Logic to add player element to grid would go here
+            const grid = document.getElementById('sauron-grid');
+            if (grid.querySelector('.empty-state')) grid.innerHTML = '';
+
+            const camDiv = document.createElement('div');
+            camDiv.className = 'target-card'; // Reuse card style
+            camDiv.innerHTML = `
+                <div style="height:200px; background:#000; display:flex; align-items:center; justify-content:center; color:#fff;">
+                    <i class="fa-solid fa-video"></i> CAM ${data.id} (Active)
+                </div>
+                <div class="target-info">
+                    <span class="target-name">Source: ${source}</span>
+                </div>
+            `;
+            grid.appendChild(camDiv);
+
+        } else {
+            alert("Failed to add camera: " + data.detail);
+        }
+    } catch (e) {
+        alert("Error connecting to Sauron module");
+    }
+}
+
+// NEUTRON
+async function startNeutronScan() {
+    const input = document.getElementById('neutron-input');
+    const username = input.value.trim();
+
+    // Options
+    const fastMode = document.getElementById('neutron-fast-mode').checked;
+    const useTor = document.getElementById('neutron-tor-mode').checked;
+    const nsfw = document.getElementById('neutron-nsfw').checked;
+    const timeout = document.getElementById('neutron-timeout').value;
+
+    // Automation Toggles
+    const feedElyon = document.getElementById('neutron-feed-elyon').checked;
+    const ghostScan = document.getElementById('neutron-ghost-scan').checked;
+
+    if (!username) return alert("Enter a username!");
+
+    const listContainer = document.getElementById('neutron-intelligence-list');
+    listContainer.innerHTML = '<div class="log-entry system"><i class="fa-solid fa-spinner fa-spin"></i> SCANNING TARGET ACROSS NEURAL RELAYS...</div>';
+
+    try {
+        const query = `username=${encodeURIComponent(username)}&fast_mode=${fastMode}&use_tor=${useTor}&nsfw=${nsfw}&timeout=${timeout}&export_csv=true`;
+        const res = await fetch(`${API_URL}/modules/neutron/scan?${query}`, { method: 'POST' });
+
+        if (res.ok) {
+            // Poll for results
+            const pollInterval = setInterval(async () => {
+                try {
+                    const r = await fetch(`${API_URL}/modules/neutron/results/${encodeURIComponent(username)}`);
+                    const data = await r.json();
+
+                    if (data.status === 'completed') {
+                        clearInterval(pollInterval);
+                        renderIntelligenceList(data.results);
+
+                        // AUTOMATION LOGIC
+                        if (feedElyon) {
+                            const task = `Analyze the digital footprint of '${username}'. Found ${data.results.length} profiles: ${data.results.map(r => r.site).join(", ")}. Identify potential risks and correlations.`;
+                            document.getElementById('elyon-task-input').value = task;
+                            startElyonTask(); // Auto-execute
+
+                            // Visual cue
+                            document.getElementById('elyon-output').innerHTML += `<div class="log-entry system"><i class="fa-solid fa-bolt"></i> AUTOMATION: Forwarding intelligence to Elyon Core...</div>`;
+                        }
+
+                        if (ghostScan) {
+                            // Assuming username is the filename (without extension mechanism for now, or just triggers scan logic)
+                            // Ideally we check if a file exists, but for now we try to trigger scan for 'username'
+                            document.getElementById('elyon-output').innerHTML += `<div class="log-entry system"><i class="fa-solid fa-id-card-clip"></i> AUTOMATION: Initiating GhostScan Protocol for '${username}'...</div>`;
+                            startScan(username + ".jpg"); // Try common extension or just name
+                        }
+                    }
+                } catch (e) { /* ignore poll errors */ }
+            }, 3000); // Check every 3s
+
+        }
+    } catch (e) {
+        listContainer.innerHTML = `<div class="log-entry error">CONNECTION FAILED TO NEUTRON MODULE.</div>`;
+    }
+}
+
+function renderIntelligenceList(results) {
+    const container = document.getElementById('neutron-intelligence-list');
+    if (!results || results.length === 0) {
+        container.innerHTML = '<div class="empty-state">No intelligence data found. Target may be off-grid.</div>';
+        return;
+    }
+
+    container.innerHTML = ''; // Clear loading
+
+    // Create a specialized grid for results
+    const grid = document.createElement('div');
+    grid.style.display = 'grid';
+    grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(250px, 1fr))';
+    grid.style.gap = '1rem';
+
+    results.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'target-card'; // Reuse style
+        card.style.height = 'auto';
+        card.style.borderLeft = '3px solid var(--success)';
+
+        // Icon logic
+        let icon = 'fa-globe';
+        const s = item.site.toLowerCase();
+        if (s.includes('instagram')) icon = 'fa-instagram';
+        else if (s.includes('facebook')) icon = 'fa-facebook';
+        else if (s.includes('twitter')) icon = 'fa-twitter';
+        else if (s.includes('github')) icon = 'fa-github';
+        else if (s.includes('linkedin')) icon = 'fa-linkedin';
+        else if (s.includes('youtube')) icon = 'fa-youtube';
+        else if (s.includes('spotify')) icon = 'fa-spotify';
+        else if (s.includes('reddit')) icon = 'fa-reddit';
+
+        card.innerHTML = `
+            <div style="padding:1rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                    <span style="font-weight:bold; color:var(--text-main);"><i class="fa-brands ${icon}"></i> ${item.site}</span>
+                    <span class="status-badge" style="background:rgba(0,255,157,0.1); color:var(--success); font-size:0.7rem; padding:2px 6px;">FOUND</span>
+                </div>
+                <a href="${item.url}" target="_blank" style="color:var(--text-muted); font-size:0.85rem; text-decoration:none; word-break:break-all;">
+                    ${item.url} <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.7rem;"></i>
+                </a>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+
+    container.appendChild(grid);
+}
+
+// ELYON
+async function startElyonTask() {
+    const input = document.getElementById('elyon-task-input');
+    const topic = input.value.trim();
+    if (!topic) return alert("Define a task for Elyon!");
+
+    const terminal = document.getElementById('elyon-output');
+    const visualizer = document.getElementById('elyon-visualizer');
+    const statusBadge = visualizer.querySelector('.status-badge');
+
+    terminal.innerHTML += `<div class="log-entry system">Assigning task to Elyon: "${topic}"...</div>`;
+
+    // ACTIVATE 3D CORE
+    visualizer.classList.add('processing');
+    statusBadge.innerText = "NEURAL LINK ACTIVE";
+
+    try {
+        const res = await fetch(`${API_URL}/modules/elyon/task?topic=${encodeURIComponent(topic)}`, { method: 'POST' });
+        const data = await res.json();
+
+        if (data.status === 'completed') {
+            const result = data.result;
+            terminal.innerHTML += `
+                <div class="log-entry success">
+                    <strong>Elyon Analysis Complete:</strong><br>
+                    ${result.analysis}<br>
+                    <ul>
+                        ${result.intelligence.map(i => `<li>${i}</li>`).join('')}
+                    </ul>
+                    Confidence: ${(result.confidence * 100).toFixed(1)}%
+                </div>
+            `;
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+    } catch (e) {
+        terminal.innerHTML += `<div class="log-entry error">Elyon Connection Failed: ${e.message}</div>`;
+    } finally {
+        // DEACTIVATE 3D CORE
+        visualizer.classList.remove('processing');
+        statusBadge.innerText = "ONLINE";
+    }
+}
+
+// --- SECURITY SYSTEM ---
+
+async function checkSystemStatus() {
+    try {
+        const res = await fetch(`${API_URL}/system/status`); // Use correct API_URL var
+        const data = await res.json();
+
+        // Modules: { sauron: "locked", ... }
+        if (data.modules) {
+            for (const [module, status] of Object.entries(data.modules)) {
+                // Determine ID based on existing HTML: "nav-sauron", "nav-neutron", "nav-elyon"
+                const navId = `nav-${module}`;
+                const navLink = document.getElementById(navId);
+
+                if (navLink) {
+                    if (status === "locked") {
+                        navLink.classList.add("locked");
+                        // Override click
+                        navLink.onclick = (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            openSecurityModal(module);
+                        };
+                    } else if (status === "active") {
+                        navLink.classList.remove("locked");
+                        navLink.onclick = () => showSection(module);
+                    }
+                }
+            }
+        }
+    } catch (e) {
+        console.error("Security Status Check Failed", e);
+    }
+}
+
+function openSecurityModal(moduleName) {
+    const modal = document.getElementById('security-modal');
+    modal.classList.add('active');
+
+    const input = document.getElementById('decryption-key');
+    input.value = "";
+    input.focus();
+
+    document.getElementById('security-msg').textContent = "AWAITING INPUT...";
+    document.getElementById('security-msg').style.color = "#666";
+}
+
+function closeSecurityModal() {
+    document.getElementById('security-modal').classList.remove('active');
+}
+
+async function unlockSystem() {
+    const key = document.getElementById('decryption-key').value;
+    const msgDiv = document.getElementById('security-msg');
+
+    if (!key) return;
+
+    msgDiv.textContent = "VERIFYING SIGNATURE...";
+    msgDiv.style.color = "var(--primary)";
+
+    try {
+        const res = await fetch(`${API_URL}/system/unlock`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ key: key })
+        });
+
+        const data = await res.json();
+
+        if (data.status === "success") {
+            msgDiv.textContent = "ACCESS GRANTED. DECRYPTING...";
+            msgDiv.style.color = "var(--success)";
+
+            // Add visual delay for effect
+            setTimeout(() => {
+                msgDiv.textContent = "SYSTEM RELOADING...";
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+            }, 1000);
+
+        } else {
+            msgDiv.textContent = "ACCESS DENIED. INVALID KEY.";
+            msgDiv.style.color = "var(--danger)";
+        }
+    } catch (e) {
+        msgDiv.textContent = "CONNECTION ERROR";
+        msgDiv.style.color = "var(--danger)";
+    }
+}
+
+// Initial Security Check
+document.addEventListener('DOMContentLoaded', () => {
+    checkSystemStatus();
+});

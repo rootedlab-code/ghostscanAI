@@ -5,10 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OSINT Face Scanner | Dashboard</title>
+    <link rel="icon" href="data:,">
     <link
         href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="premium.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
@@ -33,6 +35,19 @@
                 </a>
                 <a href="#" class="nav-item" onclick="showSection('logs')">
                     <i class="fa-solid fa-terminal"></i> Live Logs
+                </a>
+
+                <div class="nav-divider"></div>
+                <div class="nav-label">PREMIUM MODULES</div>
+
+                <a href="#" id="nav-sauron" class="nav-item premium sauron" onclick="showSection('sauron')">
+                    <i class="fa-solid fa-eye"></i> SAURON
+                </a>
+                <a href="#" id="nav-neutron" class="nav-item premium neutron" onclick="showSection('neutron')">
+                    <i class="fa-solid fa-atom"></i> NEUTRON
+                </a>
+                <a href="#" id="nav-elyon" class="nav-item premium" onclick="showSection('elyon')">
+                    <i class="fa-solid fa-brain"></i> ELYON
                 </a>
             </nav>
 
@@ -136,6 +151,184 @@
                 </div>
             </section>
 
+            <!-- SAURON SECTION -->
+            <section id="sauron" class="content-section">
+                <header class="section-header">
+                    <h1><i class="fa-solid fa-eye"></i> SYSTEM SAURON</h1>
+                    <div class="actions">
+                        <button class="btn-primary" onclick="addCamera()">
+                            <i class="fa-solid fa-video"></i> Add Camera
+                        </button>
+                    </div>
+                </header>
+                <div class="module-dashboard">
+                    <div class="camera-grid" id="sauron-grid">
+                        <div class="empty-state">
+                            <i class="fa-solid fa-video-slash fa-3x"></i>
+                            <p>No active video streams. Connect a camera to begin surveillance.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- NEUTRON SECTION -->
+            <section id="neutron" class="content-section">
+                <header class="section-header">
+                    <h1><i class="fa-solid fa-atom"></i> PROJECT NEUTRON</h1>
+                </header>
+                <div class="module-container">
+                    <div class="neutron-controls">
+                        <!-- Main Search Input -->
+                        <div class="input-group">
+                            <input type="text" id="neutron-input" placeholder="TARGET USERNAME (e.g. johndoe123)..."
+                                class="main-input">
+                            <button class="btn-primary" onclick="startNeutronScan()"
+                                style="padding: 0 2rem; font-weight:bold; letter-spacing:1px;">
+                                <i class="fa-solid fa-radar"></i> INITIATE SCAN
+                            </button>
+                        </div>
+
+                        <!-- Scan Options -->
+                        <div class="options-grid">
+                            <!-- Fast Scan -->
+                            <div class="option-card" title="Scan only top 15 sites (Fast)">
+                                <div class="toggle-wrapper">
+                                    <label class="switch">
+                                        <input type="checkbox" id="neutron-fast-mode" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                    <span class="toggle-label"><i class="fa-solid fa-bolt" style="color:#ffd700"></i>
+                                        FAST MODE</span>
+                                </div>
+                            </div>
+
+                            <!-- Ghost Mode (Tor) -->
+                            <div class="option-card" title="Route traffic through Tor Relay (Slower but Anonymous)">
+                                <div class="toggle-wrapper" style="border-color: rgba(147, 51, 234, 0.3);">
+                                    <label class="switch">
+                                        <input type="checkbox" id="neutron-tor-mode" checked>
+                                        <span class="slider" style="border-color: #9333ea;"></span>
+                                    </label>
+                                    <span class="toggle-label" style="color:#d8b4fe"><i class="fa-solid fa-ghost"></i>
+                                        GHOST MODE</span>
+                                </div>
+                            </div>
+
+                            <!-- NSFW -->
+                            <div class="option-card" title="Include NSFW sites">
+                                <div class="toggle-wrapper" style="border-color: rgba(239, 68, 68, 0.3);">
+                                    <label class="switch">
+                                        <input type="checkbox" id="neutron-nsfw">
+                                        <span class="slider" style="border-color: #ef4444;"></span>
+                                    </label>
+                                    <span class="toggle-label" style="color:#fca5a5"><i class="fa-solid fa-mask"></i>
+                                        NSFW</span>
+                                </div>
+                            </div>
+
+                            <!-- Timeout -->
+                            <div class="option-card">
+                                <div class="input-wrapper" style="display:flex; align-items:center; gap:10px;">
+                                    <i class="fa-solid fa-hourglass-half" style="color:var(--text-muted)"></i>
+                                    <input type="number" id="neutron-timeout" value="10" min="1" max="60"
+                                        style="width:60px; background:rgba(0,0,0,0.5); border:1px solid #333; color:white; padding:5px; border-radius:4px;">
+                                    <span style="font-size:0.8rem; color:var(--text-muted)">SEC/SITE</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- AUTOMATION TOGGLES -->
+                        <div class="options-grid"
+                            style="margin-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+
+                            <!-- Feed to Elyon -->
+                            <div class="option-card" title="Automatically send results to Elyon for analysis"
+                                style="border-color: var(--secondary);">
+                                <div class="toggle-wrapper">
+                                    <label class="switch">
+                                        <input type="checkbox" id="neutron-feed-elyon">
+                                        <span class="slider" style="background-color: #1a1a1a;"></span>
+                                    </label>
+                                    <span class="toggle-label" style="color:var(--secondary); font-weight:bold;">
+                                        <i class="fa-solid fa-brain"></i> FEED TO ELYON
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- GhostScan -->
+                            <div class="option-card" title="Trigger Facial Analysis (Requires existing image)"
+                                style="border-color: var(--primary);">
+                                <div class="toggle-wrapper">
+                                    <label class="switch">
+                                        <input type="checkbox" id="neutron-ghost-scan">
+                                        <span class="slider" style="background-color: #1a1a1a;"></span>
+                                    </label>
+                                    <span class="toggle-label" style="color:var(--primary); font-weight:bold;">
+                                        <i class="fa-solid fa-id-card-clip"></i> GHOST SCAN
+                                    </span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="results-container" style="margin-top: 2rem;">
+                        <h3
+                            style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem; letter-spacing:1px; border-bottom:1px solid #333; padding-bottom:0.5rem;">
+                            COLLECTED INTELLIGENCE</h3>
+                        <div id="neutron-intelligence-list" class="intelligence-grid">
+                            <div class="empty-state">No intelligence data collected. Initiate scan.</div>
+                        </div>
+                    </div>
+
+                    <!-- Live Terminal -->
+                    <div style="margin-top: 2rem;">
+                        <h3
+                            style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0.5rem; letter-spacing:1px;">
+                            <i class="fa-solid fa-terminal"></i> LIVE TERMINAL
+                        </h3>
+                        <div id="neutron-results" class="results-terminal"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ELYON MODULE -->
+            <section id="elyon" class="content-section">
+                <header class="section-header">
+                    <h1><i class="fa-solid fa-brain"></i> ELYON: AI AGENT HIVE MIND</h1>
+                </header>
+                <div class="module-container">
+                    <div class="agent-interface">
+                        <div class="agent-visualizer" id="elyon-visualizer">
+                            <div class="neural-core">
+                                <div class="ring ring-1"></div>
+                                <div class="ring ring-2"></div>
+                                <div class="ring ring-3"></div>
+                                <div class="core-energy"></div>
+                            </div>
+                            <div class="status-readout">
+                                <h3>ELYON STATUS</h3>
+                                <span class="status-badge pulse">ONLINE</span>
+                            </div>
+                        </div>
+                        <div class="agent-controls">
+                            <div class="agent-output" id="elyon-output">
+                                <div class="log-entry system">Elyon Neural Link Established... Waiting for task
+                                    allocation.</div>
+                            </div>
+                            <div class="task-input-area" style="margin-top:1rem;">
+                                <textarea id="elyon-task-input"
+                                    placeholder="Describe the intelligence task for Elyon (e.g., 'Analyze the correlation between target A and B')..."></textarea>
+                                <button class="btn-primary" onclick="startElyonTask()">
+                                    <i class="fa-solid fa-microchip"></i> EXECUTE
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
         </main>
     </div>
 
@@ -150,6 +343,22 @@
                 <input type="file" id="file-input" hidden accept="image/*">
             </div>
             <button class="btn-primary full-width" onclick="uploadFile()">Upload Target</button>
+        </div>
+    </div>
+
+    <!-- SECURITY MODAL -->
+    <div id="security-modal" class="modal-overlay">
+        <div class="security-card">
+            <h2><i class="fa-solid fa-shield-halved"></i> Security Gateway</h2>
+            <p style="color: #888; font-size: 0.85rem; margin-bottom: 2rem; font-family: 'Courier New';">
+                ENCRYPTED MODULE DETECTED.<br>
+                ENTER DECRYPTION KEY TO INITIALIZE.
+            </p>
+            <input type="password" id="decryption-key" placeholder="ACCESS KEY">
+            <button onclick="unlockSystem()">AUTHENTICATE</button>
+            <div id="security-msg" class="security-msg"></div>
+            <div style="margin-top: 1.5rem; font-size: 0.75rem; cursor: pointer; color: #555; text-transform: uppercase; letter-spacing: 1px;"
+                onclick="closeSecurityModal()">[ Cancel Connection ]</div>
         </div>
     </div>
 

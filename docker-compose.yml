@@ -19,17 +19,19 @@ services:
           devices:
             - driver: nvidia
               count: 1
-              capabilities: [gpu]
+              capabilities: [ gpu ]
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
       - TF_FORCE_GPU_ALLOW_GROWTH=true
       - TOR_PROXY_HOST=tor-proxy
       - TOR_PROXY_PORT=9050
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - ELYON_MODEL=${ELYON_MODEL:-google/gemini-2.0-flash-exp:free}
     volumes:
       - ./data:/app/data
       # Mount src to allow live reloading (optional, or just rebuild)
-      # - ./src:/app/src
-    command: uvicorn src.api:app --host 0.0.0.0 --port 8000
+      - ./src:/app/src
+    command: uvicorn src.api:app --host 0.0.0.0 --port 8000 --reload
     ports:
       - "8000:8000"
     restart: unless-stopped
