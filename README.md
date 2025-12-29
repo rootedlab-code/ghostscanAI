@@ -39,7 +39,7 @@ We are currently opening limited spots for our **Beta Access Program**. This is 
 
 1.  Clone the repository:
     ```bash
-    git clone https://github.com/rootedlab/ghostscan.git
+    git clone https://github.com/rootedlab-code/ghostscanIA.git
     cd ghostscan
     ```
 
