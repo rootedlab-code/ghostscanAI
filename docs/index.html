@@ -13,11 +13,11 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Small override for font variation */
         h1,
         .logo,
         .feature-icon,
-        .module-info h3 {
+        .module-info h3,
+        .step-circle {
             font-family: 'Orbitron', sans-serif;
         }
     </style>
@@ -28,9 +28,10 @@
     <nav>
         <div class="logo">GHOSTSCAN</div>
         <div class="nav-links">
-            <a href="#features">Features</a>
-            <a href="#modules">Modules</a>
-            <a href="#visuals">Visuals</a>
+            <a href="#features">Capabilities</a>
+            <a href="#architecture">Architecture</a>
+            <a href="#use-cases">Use Cases</a>
+            <a href="#demo">Demo</a>
             <a href="https://github.com/rootedlab-code/ghostscanIA" target="_blank"><i class="fab fa-github"></i>
                 GitHub</a>
         </div>
@@ -39,9 +40,10 @@
     <header>
         <div class="reveal">
             <h1>Ghost<span>Scan</span></h1>
-            <p class="subtitle">AI-Powered OSINT & Facial Recognition Framework. <br>De-anonymize threats. Uncover
-                digital footprints.</p>
-            <a href="https://github.com/rootedlab-code/ghostscanIA" class="cta-button delay-1">Initialize System</a>
+            <p class="subtitle">AI-Powered OSINT & Facial Recognition Framework_</p>
+            <div style="margin-top: 2rem;">
+                <a href="https://github.com/rootedlab-code/ghostscanIA" class="cta-button">Initialize System</a>
+            </div>
         </div>
     </header>
 
@@ -84,10 +86,36 @@
         </div>
     </section>
 
+    <section id="architecture">
+        <h2 class="section-title reveal"><span>System Architecture</span></h2>
+        <div class="process-steps reveal">
+            <div class="step">
+                <div class="step-circle">1</div>
+                <h3>Input Analysis</h3>
+                <p style="color:var(--text-muted); margin-top:0.5rem;">Target definition &<br>dork generation</p>
+            </div>
+            <div class="step">
+                <div class="step-circle">2</div>
+                <h3>Secure Scrape</h3>
+                <p style="color:var(--text-muted); margin-top:0.5rem;">Multi-threaded fetching<br>via Tor Relay</p>
+            </div>
+            <div class="step">
+                <div class="step-circle">3</div>
+                <h3>Biometric Scan</h3>
+                <p style="color:var(--text-muted); margin-top:0.5rem;">DeepFace encoding &<br>similarity matching</p>
+            </div>
+            <div class="step">
+                <div class="step-circle">4</div>
+                <h3>Intel Report</h3>
+                <p style="color:var(--text-muted); margin-top:0.5rem;">Graph visualization &<br>consolidated dossier</p>
+            </div>
+        </div>
+    </section>
+
     <section id="demo">
         <h2 class="section-title reveal"><span>System Demo</span></h2>
         <div class="video-container reveal delay-1"
-            style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 900px; margin: 0 auto; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 0 30px rgba(0,0,0,0.5);">
+            style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 900px; margin: 0 auto; border: 1px solid var(--primary-color); box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);">
             <iframe src="https://www.youtube.com/embed/GZtVD9gG1-Y?si=2cPOB44YxrBA_91S" title="GhostScan Demo"
                 frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -129,6 +157,27 @@
         </div>
     </div>
 
+    <section id="use-cases">
+        <h2 class="section-title reveal"><span>Operational Use Cases</span></h2>
+        <div class="use-cases-grid">
+            <div class="use-case-card reveal delay-1">
+                <div class="use-case-icon"><i class="fas fa-shield-alt"></i></div>
+                <h3>Security Research</h3>
+                <p>Validate physical security perimeters by correlating facial data with public exposure.</p>
+            </div>
+            <div class="use-case-card reveal delay-2">
+                <div class="use-case-icon"><i class="fas fa-search-location"></i></div>
+                <h3>OSINT Investigations</h3>
+                <p>Automate the tedious process of cross-referencing clearweb and deepweb visual data.</p>
+            </div>
+            <div class="use-case-card reveal delay-3">
+                <div class="use-case-icon"><i class="fas fa-user-lock"></i></div>
+                <h3>Digital P.I.</h3>
+                <p>Recover traces of lost contacts or verify identities to prevent sophisticated fraud.</p>
+            </div>
+        </div>
+    </section>
+
     <section id="visuals">
         <h2 class="section-title reveal"><span>Interface Visuals</span></h2>
 
@@ -160,14 +209,14 @@
     </footer>
 
     <script>
-        // Simple scroll reveal script
+        // Scroll Reveal
         window.addEventListener('scroll', () => {
             const reveals = document.querySelectorAll('.reveal');
             const windowHeight = window.innerHeight;
 
             reveals.forEach(reveal => {
                 const elementTop = reveal.getBoundingClientRect().top;
-                const elementVisible = 150;
+                const elementVisible = 100;
 
                 if (elementTop < windowHeight - elementVisible) {
                     reveal.classList.add('active');
