@@ -2,12 +2,12 @@ import os
 import base64
 import itertools
 import logging
+import hmac
 
 logger = logging.getLogger("Security")
 
 MODULES_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "modules")
 PREMIUM_MODULES = ["sauron", "neutron", "elyon"]
-MASTER_KEY_HASH = "REDACTED_FROM_HISTORY"  # In real app, store hash, not plain text.
 
 def xor_cipher(data, key):
     key_bytes = key.encode('utf-8')
@@ -18,18 +18,33 @@ def decrypt_module_file(file_path, key):
         with open(file_path, "rb") as f:
             header = f.readline()
             if not header.startswith(b"ENCRYPTED_HEADER_V2"):
+                logger.warning(f"Invalid header in {file_path}")
                 return False
             encrypted_data = f.read()
 
-        reversed_data = base64.b64decode(encrypted_data)
+        try:
+            reversed_data = base64.b64decode(encrypted_data)
+        except Exception:
+            logger.error(f"Base64 decode failed for {file_path}")
+            return False
+
         xor_data = reversed_data[::-1]
         original_data = xor_cipher(xor_data, key)
+        
+        # Validation: Try to compile the code to ensure it's valid Python
+        # This prevents overwriting with garbage if the key is wrong
+        try:
+            compile(original_data, file_path, 'exec')
+        except SyntaxError:
+            logger.error(f"Decryption yielded invalid code for {file_path}. Incorrect key suspected.")
+            return False
         
         new_path = file_path.replace(".pye", ".py")
         with open(new_path, "wb") as f:
             f.write(original_data)
             
         os.remove(file_path)
+        logger.info(f"Module decrypted: {file_path} -> {new_path}")
         return True
     except Exception as e:
         logger.error(f"Decryption failed for {file_path}: {e}")
@@ -42,8 +57,16 @@ def unlock_all_modules(key: str):
     """
     success_count = 0
     fail_count = 0
+    
+    expected_key = os.getenv("GHOSTSCAN_MASTER_KEY")
+    
+    if not expected_key:
+        logger.error("GHOSTSCAN_MASTER_KEY environment variable is not set!")
+        # Fallback for dev/testing if absolutely needed, but better to fail safe
+        raise ValueError("System Configuration Error: Security Key Missing")
 
-    if key != MASTER_KEY_HASH:
+    # Constant-time comparison to prevent timing attacks
+    if not hmac.compare_digest(key, expected_key):
         raise ValueError("Invalid Decryption Key")
 
     for module in PREMIUM_MODULES:

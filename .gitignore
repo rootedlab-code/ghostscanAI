@@ -34,6 +34,7 @@ ENV/
 # Environment Variables & Secrets
 .env
 .env.*
+!.env.example
 *.env
 .secrets
 secrets/
@@ -72,5 +73,13 @@ logs/
 
 
 # Security Tools
-scripts/encrypt_modules.py
-scripts/decrypt_modules.py
+scripts/
+
+# Premium Modules Source Protection
+# Ignore all .py files in premium modules, safely allowing only necessary ones if needed (currently blocking all source)
+src/modules/sauron/*.py
+src/modules/neutron/*.py
+src/modules/elyon/*.py
+!src/modules/sauron/__init__.py
+!src/modules/neutron/__init__.py
+!src/modules/elyon/__init__.py

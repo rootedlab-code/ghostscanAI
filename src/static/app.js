@@ -553,7 +553,7 @@ async function unlockSystem() {
             }, 1000);
 
         } else {
-            msgDiv.textContent = "ACCESS DENIED. INVALID KEY.";
+            msgDiv.textContent = data.message || "ACCESS DENIED. INVALID KEY.";
             msgDiv.style.color = "var(--danger)";
         }
     } catch (e) {

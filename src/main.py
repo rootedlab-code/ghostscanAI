@@ -3,6 +3,11 @@ import shutil
 import time
 import random
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
 from .scraper import SecureScraper
 from .analyzer import FaceAnalyzer
 from .utils import setup_logger, ensure_directories
