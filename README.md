@@ -1,5 +1,8 @@
 # GhostScan
 
+[![Website](https://img.shields.io/badge/Website-Live_Demo-00f3ff?style=for-the-badge&logo=github&logoColor=black)](https://rootedlab-code.github.io/ghostscanIA/)
+
+
 **GhostScan** is an advanced, AI-powered OSINT (Open Source Intelligence) tool designed for facial recognition, deep web scanning, and automated threat analysis.
 
 <p align="center">
@@ -28,6 +31,10 @@ Access to the advanced intelligence suite is governed by a separate commercial l
 We are currently opening limited spots for our **Beta Access Program**. This is available to qualified security researchers, OSINT professionals, and organizations.
 
 **Contact for Access**: [rootedlab6@gmail.com](mailto:rootedlab6@gmail.com)
+
+## 🌐 Live Demo & Documentation
+Explore the full features and commercial modules on our official landing page:
+**[👉 Launch GhostScan Website](https://rootedlab-code.github.io/ghostscanIA/)**
 
 ## Installation
 
