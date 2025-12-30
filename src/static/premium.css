@@ -91,26 +91,6 @@
     background: rgba(0, 0, 0, 0.5);
     border: 1px solid var(--primary);
     color: white;
-    padding: 1rem;
-    font-family: var(--font-body);
-    font-size: 1.1rem;
-    border-radius: 4px;
-}
-
-.results-terminal {
-    background: #000;
-    padding: 1rem;
-    height: 300px;
-    overflow-y: auto;
-    font-family: monospace;
-    color: var(--success);
-    border: 1px solid rgba(0, 255, 0, 0.2);
-}
-
-/* Gorm Agent */
-.agent-interface {
-    display: grid;
-    grid-template-columns: 300px 1fr;
     grid-template-rows: auto 1fr;
     gap: 1.5rem;
 }
@@ -251,4 +231,46 @@ input:checked+.slider:before {
 input:checked~.toggle-label {
     color: #fff;
     text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+}
+
+/* Neutron Charts */
+.charts-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.chart-card {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1rem;
+    position: relative;
+    height: 250px;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.chart-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.chart-card h3 {
+    margin: 0 0 1rem 0;
+    font-size: 0.8rem;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 0.5rem;
+}
+
+.chart-wrapper {
+    position: relative;
+    height: calc(100% - 30px);
+    width: 100%;
 }

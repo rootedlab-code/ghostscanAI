@@ -149,6 +149,14 @@ async def startup_event():
     except Exception as e:
         logger.warning(f"Neutron load failed: {e}")
 
+    # Initialize Neutron Analyzer (Lazy load or global? Lazy is safer for circular imports)
+    try:
+        from src.modules.neutron.analyzer import NeutronAnalyzer
+        # We can instantiate it per request or globally. Global is better for session reuse if needed,
+        # but for now let's just make sure it's importable.
+    except Exception as e:
+        logger.warning(f"Neutron Analyzer load failed: {e}")
+
     try:
         from src.modules.elyon.module import elyon_module
         module_manager.register_module(elyon_module)
@@ -288,6 +296,64 @@ async def get_neutron_results(username: str):
         return {"status": "completed", "results": data}
     else:
         return {"status": "not_found", "results": []}
+
+@app.post("/api/modules/neutron/deep-dive")
+async def neutron_deep_dive(username: str, background_tasks: BackgroundTasks):
+    """
+    Triggers a deep analysis of existing Neutron results for a user.
+    """
+    neutron_dir = os.path.join(DATA_DIR, "neutron")
+    latest_file = os.path.join(neutron_dir, f"{username}_latest.json")
+    
+    if not os.path.exists(latest_file):
+        raise HTTPException(status_code=404, detail="No scan results found for this user. Run a scan first.")
+
+    # Load results
+    import json
+    with open(latest_file, "r") as f:
+        scan_results = json.load(f)
+
+    if not scan_results:
+        return {"status": "empty", "message": "No profiles to analyze."}
+
+    # Run in background to avoid timeout
+    async def run_analysis(uname, results):
+        try:
+            from src.modules.neutron.analyzer import NeutronAnalyzer
+            
+            logger.info(f"Starting Deep Dive Analysis for {uname}...")
+            analyzer = NeutronAnalyzer(tor_host="tor-proxy", tor_port=9050)
+            intelligence = analyzer.analyze_profiles(results)
+            
+            # Save Intelligence Report
+            report_file = os.path.join(neutron_dir, f"{uname}_intel.json")
+            with open(report_file, "w") as f:
+                json.dump(intelligence, f, indent=2)
+                
+            logger.info(f"Deep Dive Complete for {uname}. Intelligence saved to {report_file}")
+            
+            # Broadcast availability
+            log_manager.push_log(f"SHERLOCK_STREAM: [INTELLIGENCE_READY] {uname}")
+
+        except Exception as e:
+            logger.error(f"Deep Dive Failed: {e}")
+
+    background_tasks.add_task(run_analysis, username, scan_results)
+    return {"message": "Deep Dive Analysis Started", "status": "processing"}
+
+@app.get("/api/modules/neutron/intel/{username}")
+async def get_neutron_intel(username: str):
+    """Get intelligence report."""
+    neutron_dir = os.path.join(DATA_DIR, "neutron")
+    report_file = os.path.join(neutron_dir, f"{username}_intel.json")
+    
+    if os.path.exists(report_file):
+        import json
+        with open(report_file, "r") as f:
+            data = json.load(f)
+        return data
+    else:
+        return {"status": "not_found"}
 
 # ELYON
 @app.post("/api/modules/elyon/task")

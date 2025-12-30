@@ -27,6 +27,7 @@ services:
       - TOR_PROXY_PORT=9050
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
       - ELYON_MODEL=${ELYON_MODEL:-google/gemini-2.0-flash-exp:free}
+      - GHOSTSCAN_MASTER_KEY=${GHOSTSCAN_MASTER_KEY}
     volumes:
       - ./data:/app/data
       # Mount src to allow live reloading (optional, or just rebuild)

@@ -224,10 +224,18 @@ function connectWebSocket() {
 
     ws.onmessage = (event) => {
         const msg = event.data;
+
+        // Check for Neutron matches in ANY log message
+        if (msg.includes('[+]')) {
+            handleNeutronStream(msg);
+        }
+
+        // Standard Logging
         let type = 'info';
         if (msg.includes('ERROR') || msg.includes('CRITICAL')) type = 'error';
         else if (msg.includes('WARNING')) type = 'warning';
         else if (msg.includes('DEBUG')) type = 'debug';
+        else if (msg.includes('[+]')) type = 'success'; // Highlight matches
 
         addLogEntry("Log", msg, type);
     };
@@ -337,6 +345,9 @@ async function startNeutronScan() {
     const listContainer = document.getElementById('neutron-intelligence-list');
     listContainer.innerHTML = '<div class="log-entry system"><i class="fa-solid fa-spinner fa-spin"></i> SCANNING TARGET ACROSS NEURAL RELAYS...</div>';
 
+    // RESET CHARTS
+    resetNeutronCharts();
+
     try {
         const query = `username=${encodeURIComponent(username)}&fast_mode=${fastMode}&use_tor=${useTor}&nsfw=${nsfw}&timeout=${timeout}&export_csv=true`;
         const res = await fetch(`${API_URL}/modules/neutron/scan?${query}`, { method: 'POST' });
@@ -426,7 +437,297 @@ function renderIntelligenceList(results) {
     });
 
     container.appendChild(grid);
+
+    // Update Charts
+    updateNeutronCharts(results);
+
+    // Show Deep Dive Button if results exist
+    const ddBtn = document.getElementById('deep-dive-btn');
+    if (ddBtn && results.length > 0) {
+        ddBtn.style.display = 'block';
+    }
 }
+
+// --- NEUTRON ANALYTICS LOGIC ---
+const SITE_CATEGORIES = {
+    'Social': ['Instagram', 'Facebook', 'Twitter', 'TikTok', 'Snapchat', 'Pinterest', 'Tumblr', 'Reddit', 'Myspace', 'Flickr', 'Periscope', 'Badoo', 'Tinder', 'Bumble'],
+    'Dev': ['GitHub', 'GitLab', 'BitBucket', 'StackOverflow', 'Replit', 'CodePen', 'Dev.to', 'Npm', 'Docker Hub', 'PyPI'],
+    'Business': ['LinkedIn', 'Xing', 'AngelList', 'Crunchbase', 'Slack', 'Trello', 'Upwork', 'Fiverr', 'Freelancer'],
+    'Media': ['Youtube', 'Vimeo', 'Twitch', 'SoundCloud', 'Spotify', 'Bandcamp', 'Mixcloud', 'Dailymotion', 'Medium', 'WordPress', 'Blogger'],
+    'Tech': ['HackerNews', 'ProductHunt', 'Steam', 'Discord', 'Telegram', 'Signal', 'Keybase'],
+    'Creative': ['Behance', 'Dribbble', 'Fiverr', '99designs', 'Patreon', 'Ko-fi', 'BuyMeACoffee'],
+    'Adult': ['OnlyFans', 'Pornhub', 'XVideos', 'Chaturbate', 'Fansly'],
+    'Other': []
+};
+
+let neutronRadarChart = null;
+let neutronExposureChart = null;
+let categoryScores = { 'Social': 0, 'Dev': 0, 'Business': 0, 'Media': 0, 'Tech': 0, 'Creative': 0, 'Adult': 0, 'Other': 0 };
+let totalMatches = 0;
+
+function initNeutronCharts() {
+    const ctxRadar = document.getElementById('neutron-radar-chart').getContext('2d');
+    const ctxExposure = document.getElementById('neutron-exposure-chart').getContext('2d');
+
+    Chart.defaults.color = '#888';
+    Chart.defaults.borderColor = 'rgba(255,255,255,0.1)';
+    Chart.defaults.font.family = "'Rajdhani', sans-serif";
+
+    // 1. Digital Footprint Taxonomy (Radar)
+    neutronRadarChart = new Chart(ctxRadar, {
+        type: 'radar',
+        data: {
+            labels: Object.keys(SITE_CATEGORIES).filter(k => k !== 'Other'),
+            datasets: [{
+                label: 'Footprint Intensity',
+                data: [0, 0, 0, 0, 0, 0, 0],
+                backgroundColor: 'rgba(147, 51, 234, 0.5)', // Primary Purple
+                borderColor: '#9333ea',
+                pointBackgroundColor: '#fff',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: '#9333ea'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                    pointLabels: { color: '#00ff9d', font: { size: 10 } },
+                    ticks: { display: false, backdropColor: 'transparent' },
+                    suggestedMin: 0,
+                    suggestedMax: 5
+                }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+
+    // 2. Exposure Score (Gauge / Doughnut)
+    neutronExposureChart = new Chart(ctxExposure, {
+        type: 'doughnut',
+        data: {
+            labels: ['Exposure', 'Secure'],
+            datasets: [{
+                data: [0, 100],
+                backgroundColor: [
+                    '#ef4444', // Red (Danger/Exposure)
+                    'rgba(255, 255, 255, 0.05)' // Empty
+                ],
+                borderWidth: 0,
+                cutout: '70%',
+                circumference: 180,
+                rotation: 270
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: { enabled: false }
+            }
+        }
+    });
+}
+
+function updateNeutronCharts(results) {
+    if (!neutronRadarChart || !neutronExposureChart) return;
+
+    // If results are provided, process them to update categoryScores
+    if (results) {
+        // Reset scores for a fresh calculation
+        categoryScores = { 'Social': 0, 'Dev': 0, 'Business': 0, 'Media': 0, 'Tech': 0, 'Creative': 0, 'Adult': 0, 'Other': 0 };
+        totalMatches = 0;
+
+        results.forEach(item => {
+            let site = item.site;
+            let category = 'Other';
+            for (const [cat, sites] of Object.entries(SITE_CATEGORIES)) {
+                if (sites.some(s => s.toLowerCase() === site.toLowerCase())) {
+                    category = cat;
+                    break;
+                }
+            }
+            categoryScores[category] = (categoryScores[category] || 0) + 1;
+            totalMatches++;
+        });
+    }
+
+    // Update Radar
+    const labels = neutronRadarChart.data.labels;
+    const newData = labels.map(cat => categoryScores[cat]);
+    neutronRadarChart.data.datasets[0].data = newData;
+
+    // Auto-scale radar axis if values get high
+    const maxVal = Math.max(...newData);
+    neutronRadarChart.options.scales.r.suggestedMax = maxVal > 5 ? maxVal + 2 : 5;
+
+    neutronRadarChart.update();
+
+    // Update Exposure Gauge
+    // Calculate score: Simple heuristic based on total matches + sensitivity
+    // Social accounts = 1pt, Dev = 2pt, Business = 3pt, Adult = 5pt
+    let exposureScore = 0;
+    exposureScore += (categoryScores['Social'] || 0) * 2;
+    exposureScore += (categoryScores['Dev'] || 0) * 5;     // Dev accounts reveal emails often
+    exposureScore += (categoryScores['Business'] || 0) * 10; // LinkedIn is high value
+    exposureScore += (categoryScores['Adult'] || 0) * 15;    // Blackmail risk
+    exposureScore += (categoryScores['Tech'] || 0) * 3;
+
+    // Normalize to 0-100 (soft cap at 100, but logic can go higher so we clamp)
+    let percentage = Math.min(exposureScore, 100);
+
+    // Color shift based on score
+    let color = '#10b981'; // Green
+    if (percentage > 30) color = '#f59e0b'; // Amber
+    if (percentage > 70) color = '#ef4444'; // Red
+
+    neutronExposureChart.data.datasets[0].backgroundColor[0] = color;
+    neutronExposureChart.data.datasets[0].data = [percentage, 100 - percentage];
+    neutronExposureChart.update();
+
+    // Add text overlay for Score (using Custom Plugin or simple DOM overlay? 
+    // DOM overlay is easier, see if we can just update a text element if one existed, 
+    // but for now the visual gauge is good.)
+}
+
+function handleNeutronStream(content) {
+    if (!content) return;
+
+    // Pattern look for: "[+] Site: SiteName" anywhere in string
+    // This regex finds "[+] Site: " then captures the Word immediately following (the site name)
+    // It captures up to a colon or space
+    const match = content.match(/\[\+\]\s*Site:\s*([^\s:]+)/i);
+
+    if (match && match[1]) {
+        let site = match[1].trim();
+
+        // 1. Determine Category
+        let category = 'Other';
+        for (const [cat, sites] of Object.entries(SITE_CATEGORIES)) {
+            // Case insensitive check
+            if (sites.some(s => s.toLowerCase() === site.toLowerCase())) {
+                category = cat;
+                break;
+            }
+        }
+
+        // Update Internal State
+        categoryScores[category] = (categoryScores[category] || 0) + 1;
+        if (category === 'Other') {
+            // Fallback for known major sites not in list?
+            // Maybe add dynamic checking if needed, but for now 'Other' is fine
+            categoryScores['Other']++;
+        }
+        totalMatches++;
+
+        // Update Charts
+        updateNeutronCharts();
+    }
+}
+
+// HANDLE DEEP DIVE
+async function startDeepDive() {
+    const input = document.getElementById('neutron-input');
+    const username = input.value.trim();
+    if (!username) return;
+
+    const btn = document.getElementById('deep-dive-btn');
+    const container = document.getElementById('deep-dive-results');
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> SCRAPING TARGETS (TOR)...';
+    container.innerHTML = '<div class="log-entry system">Deep Dive initiated. This may take a moment per site...</div>';
+
+    try {
+        const res = await fetch(`${API_URL}/modules/neutron/deep-dive?username=${encodeURIComponent(username)}`, { method: 'POST' });
+        if (res.ok) {
+            // Poll or wait for websocket event
+            // For simplicity, we just poll intel endpoint
+            let checks = 0;
+            const poll = setInterval(async () => {
+                checks++;
+                const r = await fetch(`${API_URL}/modules/neutron/intel/${encodeURIComponent(username)}`);
+                const data = await r.json();
+
+                if (data.status !== 'not_found') {
+                    clearInterval(poll);
+                    renderDeepDive(data);
+                    btn.innerHTML = '<i class="fa-solid fa-check"></i> ANALYSIS COMPLETE';
+                    btn.disabled = false;
+                }
+
+                if (checks > 100) clearInterval(poll); // 5 min timeout
+            }, 3000);
+        }
+    } catch (e) {
+        container.innerHTML += `<div class="log-entry error">Deep Dive Failed: ${e.message}</div>`;
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-microscope"></i> RETRY DEEP DIVE';
+    }
+}
+
+function renderDeepDive(intel) {
+    const container = document.getElementById('deep-dive-results');
+
+    // Emails
+    let emailsHtml = intel.emails && intel.emails.length ? intel.emails.map(e => `<span class="tag email">${e}</span>`).join('') : '<span class="text-muted">None found</span>';
+
+    // Phones
+    let phonesHtml = intel.phones && intel.phones.length ? intel.phones.map(p => `<span class="tag phone">${p}</span>`).join('') : '<span class="text-muted">None found</span>';
+
+    // Wallets
+    let walletsHtml = intel.crypto_wallets && intel.crypto_wallets.length ? intel.crypto_wallets.map(w => `<div class="tag crypto">${w}</div>`).join('') : '<span class="text-muted">None found</span>';
+
+    container.innerHTML = `
+        <div class="intel-report" style="background:rgba(0,0,0,0.3); padding:1rem; border-left:3px solid #7c3aed;">
+            <h4 style="color:#7c3aed; margin-top:0;">DEEP DIVE REPORT</h4>
+            <div style="margin-bottom:0.5rem;"><strong>Emails:</strong> ${emailsHtml}</div>
+            <div style="margin-bottom:0.5rem;"><strong>Phones:</strong> ${phonesHtml}</div>
+            <div style="margin-bottom:0.5rem;"><strong>Crypto:</strong> ${walletsHtml}</div>
+            <hr style="border-color:#333">
+            <div style="max-height:200px; overflow-y:auto;">
+                <small><strong>Metadata extracted from ${intel.analyzed_count} sites:</strong></small>
+                ${intel.details.map(d => `
+                    <div style="font-size:0.8rem; margin-top:5px; color:#aaa;">
+                        <span style="color:#fff">${d.site}</span>: ${d.bio || d.title || 'No info'}
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+
+// Reset Logic (updated)
+function resetNeutronCharts() {
+    categoryScores = { 'Social': 0, 'Dev': 0, 'Business': 0, 'Media': 0, 'Tech': 0, 'Creative': 0, 'Adult': 0, 'Other': 0 };
+    totalMatches = 0;
+    document.getElementById('deep-dive-results').innerHTML = '';
+    const ddBtn = document.getElementById('deep-dive-btn');
+    if (ddBtn) ddBtn.style.display = 'none';
+
+    if (neutronRadarChart) {
+        neutronRadarChart.data.datasets[0].data = [0, 0, 0, 0, 0, 0, 0];
+        neutronRadarChart.update();
+    }
+    if (neutronExposureChart) {
+        neutronExposureChart.data.datasets[0].data = [0, 100];
+        neutronExposureChart.update();
+    }
+}
+
+// Initialize charts when Neutron section is shown or on load
+document.addEventListener('DOMContentLoaded', () => {
+    // We invoke this when section becomes visible or just once safely
+    // Wait for DOM
+    setTimeout(initNeutronCharts, 1000);
+});
 
 // ELYON
 async function startElyonTask() {
