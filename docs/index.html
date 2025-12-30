@@ -28,10 +28,10 @@
     <nav>
         <div class="logo">GHOSTSCAN</div>
         <div class="nav-links">
+            <a href="#visuals">Visuals</a>
             <a href="#features">Capabilities</a>
             <a href="#architecture">Architecture</a>
             <a href="#use-cases">Use Cases</a>
-            <a href="#demo">Demo</a>
             <a href="https://github.com/rootedlab-code/ghostscanIA" target="_blank"><i class="fab fa-github"></i>
                 GitHub</a>
         </div>
@@ -47,41 +47,64 @@
         </div>
     </header>
 
+    <!-- MOVED VISUALS TO TOP FOR IMPACT -->
+    <section id="visuals">
+        <h2 class="section-title reveal"><span>Operational Interface</span></h2>
+
+        <div class="showcase-grid">
+            <div class="showcase-item reveal delay-1">
+                <img src="images/image.png" alt="GhostScan Dashboard">
+                <div class="showcase-caption">Command & Control Dashboard</div>
+            </div>
+            <div class="showcase-item reveal delay-2">
+                <img src="images/Screenshot 2025-12-28 184303.png" alt="Scan Results">
+                <div class="showcase-caption">Biometric Match Analysis</div>
+            </div>
+            <div class="showcase-item reveal delay-3">
+                <img src="images/Screenshot 2025-12-28 184250.png" alt="Data Visualizer">
+                <div class="showcase-caption">Intelligence Graph Synthesis</div>
+            </div>
+        </div>
+    </section>
+
     <section id="features">
         <h2 class="section-title reveal"><span>Core Capabilities</span></h2>
         <div class="features-grid">
             <div class="feature-card reveal delay-1">
                 <div class="feature-icon"><i class="fas fa-brain"></i></div>
-                <h3>AI-Driven Search</h3>
-                <p>Smart query generation across search engines and social platforms to pinpoint targets with minimal
-                    input.</p>
+                <h3>AI-Driven Dorking</h3>
+                <p>Automated generation of advanced Google/Bing dorks and social media query permutations to locating
+                    hidden digital footprints.</p>
             </div>
             <div class="feature-card reveal delay-2">
                 <div class="feature-icon"><i class="fas fa-user-check"></i></div>
                 <h3>DeepFace Verification</h3>
-                <p>Integrated state-of-the-art models (ArcFace, RetinaFace) for high-accuracy biometric facial matching.
-                </p>
+                <p>Features state-of-the-art implementations of <strong>ArcFace</strong> and <strong>RetinaFace</strong>
+                    for military-grade facial recognition accuracy.</p>
             </div>
             <div class="feature-card reveal delay-3">
                 <div class="feature-icon"><i class="fas fa-user-secret"></i></div>
-                <h3>Tor Anonymity</h3>
-                <p>Auto-rotating Tor proxy routing ensures your footprint remains invisible during data acquisition.</p>
+                <h3>Tor Circuit Rotation</h3>
+                <p>All outbound scraping traffic is routed through a rotating pool of Tor relays to prevent IP banning
+                    and ensure surveyor anonymity.</p>
             </div>
             <div class="feature-card reveal delay-1">
                 <div class="feature-icon"><i class="fas fa-bolt"></i></div>
-                <h3>Parallel Processing</h3>
-                <p>Multi-threaded architecture allows for rapid data scraping and real-time analysis of thousands of
-                    assets.</p>
+                <h3>Concurrent Execution</h3>
+                <p>High-performance Python threading engine capable of processing thousands of image assets in parallel
+                    pipelines.</p>
             </div>
             <div class="feature-card reveal delay-2">
-                <div class="feature-icon"><i class="fas fa-chart-network"></i></div>
-                <h3>Visual Graphing</h3>
-                <p>Visualize connections and data points in an interactive node-link diagram for deeper insights.</p>
+                <div class="feature-icon"><i class="fas fa-project-diagram"></i></div>
+                <h3>Link Analysis</h3>
+                <p>Interactive force-directed graph visualizations to uncover relationships between targets, domains,
+                    and social handles.</p>
             </div>
             <div class="feature-card reveal delay-3">
-                <div class="feature-icon"><i class="fas fa-terminal"></i></div>
-                <h3>Docker Ready</h3>
-                <p>Fully containerized environment. Deploy anywhere with a single command.</p>
+                <div class="feature-icon"><i class="fas fa-container-storage"></i></div>
+                <h3>Dockerized Deployment</h3>
+                <p>zero-dependency deployment via Docker Compose, ensuring a consistent environment across Kali Linux,
+                    Ubuntu, or Windows.</p>
             </div>
         </div>
     </section>
@@ -91,31 +114,39 @@
         <div class="process-steps reveal">
             <div class="step">
                 <div class="step-circle">1</div>
-                <h3>Input Analysis</h3>
-                <p style="color:var(--text-muted); margin-top:0.5rem;">Target definition &<br>dork generation</p>
+                <h3>Target Acquisition</h3>
+                <p
+                    style="color:var(--text-muted); margin-top:0.5rem; font-size: 0.9rem; max-width: 200px; margin-left: auto; margin-right: auto;">
+                    Input reference media. System generates biometric embeddings and query vectors.</p>
             </div>
             <div class="step">
                 <div class="step-circle">2</div>
-                <h3>Secure Scrape</h3>
-                <p style="color:var(--text-muted); margin-top:0.5rem;">Multi-threaded fetching<br>via Tor Relay</p>
+                <h3>Anonymized Extraction</h3>
+                <p
+                    style="color:var(--text-muted); margin-top:0.5rem; font-size: 0.9rem; max-width: 200px; margin-left: auto; margin-right: auto;">
+                    Scrapers execute via Tor SOCKS5 proxy, bypassing WAFs and geofencing.</p>
             </div>
             <div class="step">
                 <div class="step-circle">3</div>
-                <h3>Biometric Scan</h3>
-                <p style="color:var(--text-muted); margin-top:0.5rem;">DeepFace encoding &<br>similarity matching</p>
+                <h3>Neural Encoding</h3>
+                <p
+                    style="color:var(--text-muted); margin-top:0.5rem; font-size: 0.9rem; max-width: 200px; margin-left: auto; margin-right: auto;">
+                    RetinaFace detects faces; DeepFace calculates Euclidean distance for matches.</p>
             </div>
             <div class="step">
                 <div class="step-circle">4</div>
-                <h3>Intel Report</h3>
-                <p style="color:var(--text-muted); margin-top:0.5rem;">Graph visualization &<br>consolidated dossier</p>
+                <h3>Intelligence Synthesis</h3>
+                <p
+                    style="color:var(--text-muted); margin-top:0.5rem; font-size: 0.9rem; max-width: 200px; margin-left: auto; margin-right: auto;">
+                    Valid matches are enriched with metadata and plotted on the intel graph.</p>
             </div>
         </div>
     </section>
 
     <section id="demo">
-        <h2 class="section-title reveal"><span>System Demo</span></h2>
+        <h2 class="section-title reveal"><span>Live Demonstration</span></h2>
         <div class="video-container reveal delay-1"
-            style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 900px; margin: 0 auto; border: 1px solid var(--primary-color); box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);">
+            style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 900px; margin: 0 auto; border: 1px solid var(--primary-color); box-shadow: 0 0 40px rgba(0, 243, 255, 0.15);">
             <iframe src="https://www.youtube.com/embed/GZtVD9gG1-Y?si=2cPOB44YxrBA_91S" title="GhostScan Demo"
                 frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -123,18 +154,44 @@
         </div>
     </section>
 
+    <section id="use-cases">
+        <h2 class="section-title reveal"><span>Operational Use Cases</span></h2>
+        <div class="use-cases-grid">
+            <div class="use-case-card reveal delay-1">
+                <div class="use-case-icon"><i class="fas fa-search"></i></div>
+                <h3>Missing Persons / Human Trafficking</h3>
+                <p>Deploy autonomous crawlers to scan dark web archives and social platforms for recent imagery of
+                    missing individuals, utilizing aging-agnostic facial recognition.</p>
+            </div>
+            <div class="use-case-card reveal delay-2">
+                <div class="use-case-icon"><i class="fas fa-user-shield"></i></div>
+                <h3>Counter-Intelligence & Vetting</h3>
+                <p>Rapidly audit potential hires or subjects of interest by correlating their provided photos with
+                    leaked databases, dating sites, and archived social media footprint.</p>
+            </div>
+            <div class="use-case-card reveal delay-3">
+                <div class="use-case-icon"><i class="fas fa-mask"></i></div>
+                <h3>Fraud Detection</h3>
+                <p>Unmask synthetic identities (SOCKPUPPETS) by reverse-searching profile images across the web to find
+                    their original source or inconsistent usage patterns.</p>
+            </div>
+        </div>
+    </section>
+
     <div class="modules" id="modules">
         <div class="modules-container">
-            <h2 class="section-title reveal" style="margin-bottom: 2rem;"><span>Premium Intelligence</span></h2>
+            <h2 class="section-title reveal" style="margin-bottom: 2rem;"><span>Premium Modules (Beta)</span></h2>
             <p
-                style="text-align:center; color:#888; margin-bottom: 3rem; max-width: 600px; margin-left:auto; margin-right:auto;">
-                Advanced commercial modules for specialized operations. Request beta access for enterprise capabilities.
+                style="text-align:center; color:#888; margin-bottom: 3rem; max-width: 700px; margin-left:auto; margin-right:auto;">
+                GhostScan offers a commercial tier for government and enterprise clients, featuring specialized modules
+                for active surveillance and deep-web correlation.
             </p>
 
             <div class="module-card reveal">
                 <div class="module-info">
                     <h3>SAURON INTERFACE</h3>
-                    <p>Real-time surveillance integration and RTSP stream analysis engine.</p>
+                    <p>Real-time RTSP stream analysis engine capable of monitoring multiple camera feeds for target
+                        identification in physical spaces.</p>
                 </div>
                 <span class="badge">Commercial</span>
             </div>
@@ -142,7 +199,8 @@
             <div class="module-card reveal delay-1">
                 <div class="module-info">
                     <h3>NEUTRON GRAPH</h3>
-                    <p>Advanced username enumeration and cross-platform identity correlation.</p>
+                    <p>Advanced username enumeration and cross-platform identity correlation engine. Maps a single
+                        handle to a complete digital profile.</p>
                 </div>
                 <span class="badge">Commercial</span>
             </div>
@@ -150,61 +208,25 @@
             <div class="module-card reveal delay-2">
                 <div class="module-info">
                     <h3>ELYON AGENT</h3>
-                    <p>Autonomous investigative AI capable of automated report generation and reasoning.</p>
+                    <p>Autonomous LLM-driven investigative agent. Capable of reasoning, pattern recognition, and
+                        generating natural language intelligence reports.</p>
                 </div>
                 <span class="badge">Commercial</span>
             </div>
         </div>
     </div>
 
-    <section id="use-cases">
-        <h2 class="section-title reveal"><span>Operational Use Cases</span></h2>
-        <div class="use-cases-grid">
-            <div class="use-case-card reveal delay-1">
-                <div class="use-case-icon"><i class="fas fa-shield-alt"></i></div>
-                <h3>Security Research</h3>
-                <p>Validate physical security perimeters by correlating facial data with public exposure.</p>
-            </div>
-            <div class="use-case-card reveal delay-2">
-                <div class="use-case-icon"><i class="fas fa-search-location"></i></div>
-                <h3>OSINT Investigations</h3>
-                <p>Automate the tedious process of cross-referencing clearweb and deepweb visual data.</p>
-            </div>
-            <div class="use-case-card reveal delay-3">
-                <div class="use-case-icon"><i class="fas fa-user-lock"></i></div>
-                <h3>Digital P.I.</h3>
-                <p>Recover traces of lost contacts or verify identities to prevent sophisticated fraud.</p>
-            </div>
-        </div>
-    </section>
-
-    <section id="visuals">
-        <h2 class="section-title reveal"><span>Interface Visuals</span></h2>
-
-        <div class="showcase-grid">
-            <div class="showcase-item reveal delay-1">
-                <img src="images/image.png" alt="GhostScan Dashboard">
-                <div class="showcase-caption">Target Management Dashboard</div>
-            </div>
-            <div class="showcase-item reveal delay-2">
-                <img src="images/Screenshot 2025-12-28 184303.png" alt="Scan Results">
-                <div class="showcase-caption">Facial Recognition Matches</div>
-            </div>
-            <div class="showcase-item reveal delay-3">
-                <img src="images/Screenshot 2025-12-28 184250.png" alt="Data Visualizer">
-                <div class="showcase-caption">Intelligence Graph</div>
-            </div>
-        </div>
-    </section>
-
     <footer>
         <p>&copy; 2025 RootedLab Code. All Rights Reserved.</p>
-        <p style="margin-top: 1rem; font-size: 0.8rem; opacity: 0.6;">
-            Disclaimer: This tool is for educational and authorized research purposes only.
+        <p
+            style="margin-top: 1rem; font-size: 0.8rem; opacity: 0.6; max-width: 600px; margin-left: auto; margin-right: auto;">
+            DISCLAIMER: This software is provided for educational and authorized security research purposes only. The
+            developers assume no liability for misuse. Users are responsible for adhering to applicable privacy laws
+            (GDPR, CCPA) and local regulations.
         </p>
-        <div style="margin-top: 1.5rem;">
-            <a href="https://github.com/rootedlab-code/ghostscanIA">GitHub</a>
-            <a href="mailto:rootedlab6@gmail.com">Contact</a>
+        <div style="margin-top: 2rem;">
+            <a href="https://github.com/rootedlab-code/ghostscanIA"><i class="fab fa-github"></i> Source Code</a>
+            <a href="mailto:rootedlab6@gmail.com"><i class="fas fa-envelope"></i> Contact Support</a>
         </div>
     </footer>
 
@@ -216,7 +238,7 @@
 
             reveals.forEach(reveal => {
                 const elementTop = reveal.getBoundingClientRect().top;
-                const elementVisible = 100;
+                const elementVisible = 80;
 
                 if (elementTop < windowHeight - elementVisible) {
                     reveal.classList.add('active');
